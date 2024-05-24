@@ -1,0 +1,134 @@
+.topNav_back{
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    background-color: #219AFF;
+    box-shadow: rgba(58, 58, 58, 0.16) 0px 1px 2px;
+}
+body{
+  background-image: url("https://wallpaperaccess.com/full/8171295.jpg");
+}
+.home{
+    height: 500px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.modal_in{
+    display: flex;
+    flex-direction: column;
+}
+.inp{
+    border-radius: 5px;
+    border:  2px solid #a9a9a9;
+}
+.bt{
+    background-color: #219AFF;
+    color: #fff;
+    font-size: 22px;
+    width: 190px;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+}
+.bt2{
+    background-color: #219AFF;
+    color: #fff;
+    font-size: 16px;
+    width: 90px;
+    padding: 3px;
+    border: none;
+    border-radius: 5px;
+}
+.play_back{
+    display: flex;
+    justify-content: center; 
+    color:darkgrey;
+    margin-left: 5px;
+    font-size:x-large;
+}
+.player{
+    width: 60%;
+    height: 550px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-radius: 10px;
+    border:  2px solid #a9a9a9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.inside_play{
+    width: 60%;
+    height: 210px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 10px;
+    border:  2px solid #a9a9a9; 
+}
+/* style.css */
+
+/* Base Styles */
+.topNav_back {
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+/* Dark Mode */
+.dark-mode .topNav_back {
+  background-color:lightskyblue;
+  color:black;
+  align-items: center;
+}
+
+/* Night Mode */
+.night-mode .topNav_back {
+  background-color: #000;
+  color:black;
+}
+
+/* Text styling */
+.topNav_back .h4 {
+  margin: 0.5rem;
+}
+
+/* Button styling */
+.topNav_back .toggle-button {
+  margin-left: auto;
+  margin-right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: currentColor;
+  transition: color 0.3s ease-in-out;
+}
+
+.topNav_back .toggle-button:hover {
+  color: gold;
+}
+
+  /* Animation Effect */
+  @keyframes slideIn {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .topNav_back {
+    animation: slideIn 0.5s ease-out;
+  }
+  
+  .m-2 mt-0{
+    color: #fff;
+  }
