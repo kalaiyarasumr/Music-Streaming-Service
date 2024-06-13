@@ -1,77 +1,107 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json({ limit: '100mb' }));
 app.use(cors());
 
+const mongoURI = process.env.MONGO_URI;
 
-let DataBase = [];
+if (!mongoURI) {
+    console.error('MongoDB URI is not defined. Please check your environment variables.');
+    process.exit(1);
+}
 
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+
+db.on('error', (error) => {
+    console.error('Connection error:', error);
+});
+db.once('open', () => {
+    console.log('Connected to MongoDB');
+});
+
+const DataSchema = new mongoose.Schema({
+    file: String,
+    description: String,
+    title: String,
+});
+
+const Data = mongoose.model('Data', DataSchema);
 
 app.get('/get', async (req, res) => {
     try {
-        res.json(DataBase);
-    } catch(err) {
-        console.log("Error in Player", err);
+        const data = await Data.find();
+        res.json(data);
+    } catch (err) {
+        console.log('Error in fetching data', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-
 app.post('/create', async (req, res) => {
     try {
-        const { file,description,title } = req.body;
-        DataBase.push({file,description,title })
-        res.json('done')
-       
+        const { file, description, title } = req.body;
+        if (!file || !description || !title) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+        const existingData = await Data.findOne({ title });
+        if (existingData) {
+            return res.status(409).json({ error: 'Data with this title already exists' });
+        }
+        const newData = new Data({ file, description, title });
+        await newData.save();
+        res.status(201).json('done');
     } catch (error) {
-        console.error('Error in Player Creation:', error);
+        console.error('Error in creating data:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 app.delete('/delete/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const initialLength = DataBase.length; 
-        DataBase = DataBase.filter(game => game.title !== id); 
-        const finalLength = DataBase.length;
-        if (finalLength < initialLength) {
+        const result = await Data.deleteOne({ _id: id });
+        if (result.deletedCount > 0) {
             res.json('deleted');
-            console.log("Music deleted successfully");
         } else {
-            res.status(404).json('No Music found to delete');
-            console.log("No Music found to delete");
+            res.status(404).json({ error: 'No data found to delete' });
         }
     } catch (error) {
-        console.error('Error in deleting music:', error);
+        console.error('Error in deleting data:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-app.put('/update/:id', (req, res) => {
-    const { id } = req.params;
-    const { file,description,title} = req.body;
-    console.log(id)
-    const dataIndex = DataBase.findIndex(data => data.title === id);
+app.put('/update/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { file, description, title } = req.body;
+        const result = await Data.updateOne({ _id: id }, { file, description, title });
 
-    if (dataIndex === -1) {
-        console.log("not found");
-    } else {
-        DataBase[dataIndex].file = file;
-        DataBase[dataIndex].description = description;
-        DataBase[dataIndex].title = title;
-        console.log('Music updated'); 
+        if (result.nModified > 0) {
+            res.json('updated');
+        } else {
+            res.status(404).json({ error: 'No data found to update' });
+        }
+    } catch (error) {
+        console.error('Error in updating data:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-    res.json('update');
 });
 
-app.get('/',(req,res)=>{
-    res.send(DataBase)
-})
-
+app.get('/', (req, res) => {
+    res.send('Welcome to the API');
+});
 
 app.listen(5000, () => {
-    console.log("Server is Running")
-})
+    console.log('Server is Running on port 5000');
+});
